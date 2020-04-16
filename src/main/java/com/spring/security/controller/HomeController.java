@@ -10,8 +10,4 @@ public class HomeController{
     public String root() {
         return "login";
     }
-
-   
-    
-
 }
