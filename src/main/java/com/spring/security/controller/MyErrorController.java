@@ -15,7 +15,6 @@ public class MyErrorController implements ErrorController{
     public String renderErrorPage(HttpServletRequest httpRequest,Model model) {
        
         int httpErrorCode = getErrorCode(httpRequest);
-        System.out.print(httpErrorCode);
         if (httpErrorCode==404) {
             return "notfound";
             }
