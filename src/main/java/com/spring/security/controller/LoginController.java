@@ -1,6 +1,5 @@
 package com.spring.security.controller;
 
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -29,18 +28,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.security.domain.UserDetail;
 import com.spring.security.message.Message;
+
 @Controller
 public class LoginController {
-	
+
 	@Autowired
 	MessageSource messageSource;
-	
+
 	@RequestMapping("/login")
 	public String login(@AuthenticationPrincipal User user,
 			@RequestAttribute(name = WebAttributes.AUTHENTICATION_EXCEPTION, required = false) AuthenticationException exception,
 			Model model) throws Exception {
-		if (Objects.nonNull(user)){
+		if (Objects.nonNull(user)) {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			UserDetail userPrincipal = (UserDetail) auth.getPrincipal();
+			model.addAttribute("role", userPrincipal.getRole());
 			return "index";
 		}
 		if (Objects.nonNull(exception)) {
@@ -50,7 +54,10 @@ public class LoginController {
 	}
 
 	@GetMapping("/index")
-	public String userIndex() {
+	public String userIndex(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		UserDetail userPrincipal = (UserDetail) auth.getPrincipal();
+		model.addAttribute("role", userPrincipal.getRole());
 		return "index";
 	}
 
@@ -58,23 +65,20 @@ public class LoginController {
 	public String admin() {
 		return "/admin";
 	}
-	
+
 	@RequestMapping("/accessdenied")
 	public ModelAndView accessdenied() {
 		return new ModelAndView("accessdenied");
 	}
-	
-	private void setSessionExceedMessage(AuthenticationException exception, Model model) throws Exception{
+
+	private void setSessionExceedMessage(AuthenticationException exception, Model model) throws Exception {
 		if (exception instanceof SessionAuthenticationException) {
 			model.addAttribute("error", messageSource.getMessage(Message.session_msg, null, Locale.JAPAN));
-		}
-		else if (exception instanceof BadCredentialsException) {
+		} else if (exception instanceof BadCredentialsException) {
 			model.addAttribute("error", messageSource.getMessage(Message.badCredential_msg, null, Locale.JAPAN));
-		}
-		else {
+		} else {
 			throw new Exception("An unexpected error occured");
 		}
 	}
 
-	
 }
