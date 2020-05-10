@@ -12,11 +12,11 @@
     <body>
         <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
 
-        <div sec:authorize="hasRole('ADMIN')">
+        <div sec:authorize="hasRole('admin')">
             This content is only shown to administrators.
         </div>
 
-        <div sec:authorize="hasRole('USER')">
+        <div sec:authorize="hasRole('user')">
             This content is only shown to users.
         </div>
 
@@ -24,8 +24,13 @@
 
         <div>
             User: <span sec:authentication="name">NOT FOUND</span>
-            Spring Roles: <span sec:authentication="principal.authorities">NOT FOUND</span>
+            Spring Roles: <span sec:authentication="principal.authorities" th:text=${role}>NOT FOUND</span>
         </div>
+        
+       <!--  <div>
+            User: <span sec:authentication="name">NOT FOUND</span>
+            Spring Roles: <span sec:authentication="name">NOT FOUND</span>
+        </div> -->
 
         <br/>
         <form th:action="@{/logout}" method="post">
