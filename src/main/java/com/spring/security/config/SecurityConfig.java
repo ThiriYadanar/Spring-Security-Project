@@ -21,6 +21,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import com.spring.security.controller.CustomAccessDeniedHandler;
@@ -32,7 +33,7 @@ import com.spring.security.service.UserService;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
-	private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+	private AuthenticationSuccessHandler authenticationSuccessHandler;
 
 	@Autowired
 	private CustomAccessDeniedHandler accessDeniedHandler;
@@ -44,12 +45,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
-	private UserService userService;
+	private UserDetailsService userService;
 
 	@Bean
-	public DaoAuthenticationProvider authenticationProvider(UserService userService) {
+	public DaoAuthenticationProvider authenticationProvider(UserDetailsService userService2) {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-		authenticationProvider.setUserDetailsService(userService);
+		authenticationProvider.setUserDetailsService(userService2);
 		authenticationProvider.setPasswordEncoder(bCryptPasswordEncoder);
 		return authenticationProvider;
 	}
@@ -89,16 +90,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public static ServletListenerRegistrationBean httpSessionEventPublisher() {
 		return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
 	}
-
-//	@Bean
-//	@Override
-//	public UserDetailsService userDetailsService() {
-//		UserDetails user = User.withDefaultPasswordEncoder().username("user").password("pass").roles("USER").build();
-//		UserDetails admin = User.withDefaultPasswordEncoder().username("admin").password("adpass").roles("ADMIN")
-//				.build();
-//
-//		return new InMemoryUserDetailsManager(user, admin);
-//	}
 
 	@Bean
 	public CustomAccessDeniedHandler accessDeniedHandler() {
